@@ -83,19 +83,19 @@ public class UserManager extends Manager {
     public User parseUser(String userJson) {
         JSONObject userDetailsGeneral = new JSONObject(userJson);
         JSONObject userDetails = (JSONObject) userDetailsGeneral.get("attributes");
-        return new User((long)
-                userDetails.get("id"),
-                (String) userDetails.get("external_id"),
-                UUID.fromString((String) userDetails.get("uuid")),
-                (String) userDetails.get("username"),
-                (String) userDetails.get("email"),
-                (String) userDetails.get("first_name"),
-                (String) userDetails.get("last_name"),
-                (String) userDetails.get("language"),
-                (Boolean) userDetails.get("root_admin"),
-                (Boolean) userDetails.get("2fa"),
-                (String) userDetails.get("created_at"),
-                (String) userDetails.get("updated_at"));
+        return new User(
+                userDetails.getLong("id"),
+                userDetails.getString("external_id"),
+                UUID.fromString(userDetails.getString("uuid")),
+                userDetails.getString("username"),
+                userDetails.getString("email"),
+                userDetails.getString("first_name"),
+                userDetails.getString("last_name"),
+                userDetails.getString("language"),
+                userDetails.getBoolean("root_admin"),
+                userDetails.getBoolean("2fa"),
+                userDetails.getString("created_at"),
+                userDetails.getString("updated_at"));
     }
 
     private JSONObject makeRequestJSON(User user) {
