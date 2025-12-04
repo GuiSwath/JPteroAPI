@@ -38,9 +38,8 @@ public class Requester {
 
                 int responseCode = connection.getResponseCode();
 
-
                 jsonResponse.put("httpCode", responseCode);
-                jsonResponse.put("httpHeader", connection.getHeaderFields());
+                jsonResponse.put("httpHeader", connection.getHeaderFields() == null ? " " : connection.getHeaderFields());
                 jsonResponse.put("response", responseCode == HttpURLConnection.HTTP_NOT_FOUND ? new JSONObject() : getJsonResponse(connection));
                 response.complete(jsonResponse);
             } catch (IOException e) {
@@ -51,8 +50,9 @@ public class Requester {
         };
 
         CompletableFuture.runAsync(task).exceptionally(throwable -> {
-            LOGGER.severe("OCORREU UM ERRO AO PEGAR A RESPOSTA DA REQUEST");
-            throw new RuntimeException(throwable);
+            LOGGER.severe("ERRO: " + throwable.getMessage());
+            throwable.printStackTrace();
+            return null;
         });
 
         return response;
