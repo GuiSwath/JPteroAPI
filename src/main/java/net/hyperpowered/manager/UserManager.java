@@ -4,10 +4,8 @@ import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.requester.ApplicationEndpoint;
 import net.hyperpowered.user.User;
 import net.hyperpowered.user.builder.UserBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +80,8 @@ public class UserManager extends Manager {
         });
     }
 
-    public User parseUser(String userJson) throws ParseException {
-        JSONObject userDetailsGeneral = (JSONObject) new JSONParser().parse(userJson);
+    public User parseUser(String userJson) {
+        JSONObject userDetailsGeneral = new JSONObject(userJson);
         JSONObject userDetails = (JSONObject) userDetailsGeneral.get("attributes");
         return new User((long)
                 userDetails.get("id"),

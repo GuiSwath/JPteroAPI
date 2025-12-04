@@ -2,9 +2,7 @@ package net.hyperpowered.requester;
 
 import lombok.AllArgsConstructor;
 import net.hyperpowered.logger.PteroLogger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -45,7 +43,7 @@ public class Requester {
                 jsonResponse.put("httpHeader", connection.getHeaderFields());
                 jsonResponse.put("response", responseCode == HttpURLConnection.HTTP_NOT_FOUND ? new JSONObject() : getJsonResponse(connection));
                 response.complete(jsonResponse);
-            } catch (IOException | ParseException e) {
+            } catch (IOException e) {
                 response.completeExceptionally(e);
             } finally {
                 if (connection != null) connection.disconnect();
@@ -80,7 +78,7 @@ public class Requester {
         if (requestMethod != RequestMethod.GET) connection.setDoOutput(true);
     }
 
-    private JSONObject getJsonResponse(HttpURLConnection connection) throws IOException, ParseException {
+    private JSONObject getJsonResponse(HttpURLConnection connection) throws IOException {
         try (InputStream is = connection.getInputStream()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                 StringBuilder sb = new StringBuilder();
@@ -89,7 +87,7 @@ public class Requester {
                     sb.append(line);
                 }
 
-                return sb.toString().isEmpty() ? new JSONObject() : (JSONObject) new JSONParser().parse(sb.toString());
+                return sb.toString().isEmpty() ? new JSONObject() : new JSONObject(sb.toString());
             }
         }
     }

@@ -2,7 +2,7 @@ package net.hyperpowered.node.builder;
 
 import lombok.Getter;
 import net.hyperpowered.interfaces.Builder;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 @Getter
 public class NodeBuilder implements Builder {

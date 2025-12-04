@@ -5,11 +5,10 @@ import net.hyperpowered.nest.Egg;
 import net.hyperpowered.nest.EggScript;
 import net.hyperpowered.nest.Nest;
 import net.hyperpowered.requester.ApplicationEndpoint;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -105,8 +104,8 @@ public class NestManager extends Manager {
         return response;
     }
 
-    public Nest parseNest(String nestJson) throws ParseException {
-        JSONObject nestDetailsGeneral = (JSONObject) new JSONParser().parse(nestJson);
+    public Nest parseNest(String nestJson) {
+        JSONObject nestDetailsGeneral = new JSONObject(nestJson);
         JSONObject nestDetails = (JSONObject) nestDetailsGeneral.get("attributes");
         return new Nest(
                 (Long) nestDetails.get("id"),
@@ -119,8 +118,8 @@ public class NestManager extends Manager {
         );
     }
 
-    public Egg parseEgg(String eggJson) throws ParseException {
-        JSONObject eggDetailsGeneral = (JSONObject) new JSONParser().parse(eggJson);
+    public Egg parseEgg(String eggJson) {
+        JSONObject eggDetailsGeneral = new JSONObject(eggJson);
         JSONObject eggDetails = (JSONObject) eggDetailsGeneral.get("attributes");
         JSONObject eggScriptDetails = (JSONObject) eggDetails.get("script");
         EggScript eggScript = new EggScript(

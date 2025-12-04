@@ -5,7 +5,7 @@ import net.hyperpowered.interfaces.Builder;
 import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.requester.RequestMethod;
 import net.hyperpowered.requester.Requester;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.util.concurrent.CompletableFuture;
 

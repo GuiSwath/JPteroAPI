@@ -3,7 +3,7 @@ package net.hyperpowered.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 @AllArgsConstructor
 @Getter

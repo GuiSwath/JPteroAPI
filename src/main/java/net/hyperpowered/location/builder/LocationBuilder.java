@@ -2,7 +2,7 @@ package net.hyperpowered.location.builder;
 
 import lombok.Getter;
 import net.hyperpowered.interfaces.Builder;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 @Getter
 public class LocationBuilder implements Builder {

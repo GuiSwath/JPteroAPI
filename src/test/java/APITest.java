@@ -12,7 +12,7 @@ import net.hyperpowered.server.builder.ServerLimitBuilder;
 import net.hyperpowered.user.User;
 import net.hyperpowered.user.builder.UserBuilder;
 import net.hyperpowered.utils.ManagerPolicy;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;

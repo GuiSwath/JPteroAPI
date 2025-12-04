@@ -4,11 +4,10 @@ import net.hyperpowered.location.Location;
 import net.hyperpowered.location.builder.LocationBuilder;
 import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.requester.ApplicationEndpoint;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -84,8 +83,8 @@ public class LocationManager extends Manager {
         });
     }
 
-    public Location parseLocation(String locationJson) throws ParseException {
-        JSONObject locationDetailsGeneral = (JSONObject) new JSONParser().parse(locationJson);
+    public Location parseLocation(String locationJson) {
+        JSONObject locationDetailsGeneral = new JSONObject(locationJson);
         JSONObject locationDetails = (JSONObject) locationDetailsGeneral.get("attributes");
         return new Location(
                 (Long) locationDetails.get("id"),

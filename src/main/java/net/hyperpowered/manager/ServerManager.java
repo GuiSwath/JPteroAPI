@@ -5,10 +5,8 @@ import net.hyperpowered.requester.ApplicationEndpoint;
 import net.hyperpowered.server.*;
 import net.hyperpowered.server.builder.DatabaseBuilder;
 import net.hyperpowered.server.builder.ServerBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,8 +228,8 @@ public class ServerManager extends Manager {
         });
     }
 
-    public Server parseServer(String serverJson) throws ParseException {
-        JSONObject serverDetailsGeneral = (JSONObject) new JSONParser().parse(serverJson);
+    public Server parseServer(String serverJson) {
+        JSONObject serverDetailsGeneral = new JSONObject(serverJson);
         JSONObject serverDetails = (JSONObject) serverDetailsGeneral.get("attributes");
         JSONObject serverLimitJson = (JSONObject) serverDetails.get("limits");
         JSONObject futureLimitJson = (JSONObject) serverDetails.get("feature_limits");
@@ -270,14 +268,14 @@ public class ServerManager extends Manager {
                 (long) serverDetails.get("allocation"),
                 (long) serverDetails.get("nest"),
                 (long) serverDetails.get("egg"),
-                (String) serverDetails.getOrDefault("pack", null),
+                serverDetails.getString("pack"),
                 container,
                 (String) serverDetails.get("created_at"),
                 (String) serverDetails.get("updated_at"));
     }
 
-    public Database parseDatabase(String databaseJson) throws ParseException {
-        JSONObject serverDetailsGeneral = (JSONObject) new JSONParser().parse(databaseJson);
+    public Database parseDatabase(String databaseJson) {
+        JSONObject serverDetailsGeneral = new JSONObject(databaseJson);
         JSONObject serverDetails = (JSONObject) serverDetailsGeneral.get("attributes");
         JSONObject relationships = (JSONObject) serverDetails.get("relationships");
         return new Database(

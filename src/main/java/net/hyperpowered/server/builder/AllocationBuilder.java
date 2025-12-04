@@ -2,8 +2,8 @@ package net.hyperpowered.server.builder;
 
 import lombok.Getter;
 import net.hyperpowered.interfaces.Builder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
@@ -20,7 +20,7 @@ public class AllocationBuilder implements Builder {
 
     public AllocationBuilder appendPorts(long... ports) {
         JSONArray portsValue = new JSONArray();
-        Arrays.stream(ports).forEach(port -> portsValue.add(String.valueOf(port)));
+        Arrays.stream(ports).forEach(port -> portsValue.put(String.valueOf(port)));
         this.ports = portsValue;
         return this;
     }

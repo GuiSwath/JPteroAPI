@@ -5,10 +5,8 @@ import net.hyperpowered.node.*;
 import net.hyperpowered.node.builder.NodeBuilder;
 import net.hyperpowered.requester.ApplicationEndpoint;
 import net.hyperpowered.server.builder.AllocationBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,8 +250,8 @@ public class NodeManager extends Manager {
         });
     }
 
-    public NodeConfiguration parseNodeConfig(String nodeConfigJson) throws ParseException {
-        JSONObject nodeConfigDetailsGeneral = (JSONObject) new JSONParser().parse(nodeConfigJson);
+    public NodeConfiguration parseNodeConfig(String nodeConfigJson) {
+        JSONObject nodeConfigDetailsGeneral = new JSONObject(nodeConfigJson);
         JSONObject nodeConfigAPIJson = (JSONObject) nodeConfigDetailsGeneral.get("api");
         JSONObject nodeConfigSystem = (JSONObject) nodeConfigDetailsGeneral.get("system");
         JSONObject nodeConfigSSL = (JSONObject) nodeConfigAPIJson.get("ssl");
@@ -286,8 +284,8 @@ public class NodeManager extends Manager {
         );
     }
 
-    public Node parseNode(String nodeJson) throws ParseException {
-        JSONObject nodeDetailsGeneral = (JSONObject) new JSONParser().parse(nodeJson);
+    public Node parseNode(String nodeJson) {
+        JSONObject nodeDetailsGeneral = new JSONObject(nodeJson);
         JSONObject nodeDetails = (JSONObject) nodeDetailsGeneral.get("attributes");
         return new Node(
                 (long) nodeDetails.get("id"),
@@ -313,8 +311,8 @@ public class NodeManager extends Manager {
         );
     }
 
-    public Allocation parseAllocation(String allocationJson) throws ParseException {
-        JSONObject allocationDetailsGeneral = (JSONObject) new JSONParser().parse(allocationJson);
+    public Allocation parseAllocation(String allocationJson) {
+        JSONObject allocationDetailsGeneral = new JSONObject(allocationJson);
         JSONObject allocationDetails = (JSONObject) allocationDetailsGeneral.get("attributes");
         return new Allocation(
                 (long) allocationDetails.get("id"),
