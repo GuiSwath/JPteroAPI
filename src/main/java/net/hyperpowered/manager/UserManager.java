@@ -82,7 +82,7 @@ public class UserManager extends Manager {
 
     public User parseUser(String userJson) {
         JSONObject userDetailsGeneral = new JSONObject(userJson);
-        JSONObject userDetails = (JSONObject) userDetailsGeneral.get("attributes");
+        JSONObject userDetails = userDetailsGeneral.getJSONObject("attributes");
         return new User(
                 userDetails.getLong("id"),
                 userDetails.getString("external_id"),
@@ -110,7 +110,7 @@ public class UserManager extends Manager {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             response.put("password", user.getPassword());
         }
-        if (user.getExternalID() != null && !user.getExternalID().isEmpty()) {
+        if (!user.getExternalID().isEmpty()) {
             response.put("external_id", user.getExternalID());
         }
         return response;
