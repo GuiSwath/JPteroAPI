@@ -103,7 +103,7 @@ public class NodeManager extends Manager {
                 JSONArray allocationJson = (JSONArray) responseObject.get("data");
                 JSONObject meta = (JSONObject) responseObject.get("meta");
                 JSONObject pagination = (JSONObject) meta.get("pagination");
-                long pages = (long) pagination.get("total_pages");
+                long pages = pagination.getLong("total_pages");
 
                 for (int i = 1; i < pages; i++) {
                     List<Allocation> allcs = listAllocations(nodeID, (i + 1)).get();
@@ -157,10 +157,10 @@ public class NodeManager extends Manager {
         CompletableFuture<Integer> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations").thenAccept(responseJson -> {
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONObject meta = (JSONObject) responseObject.get("meta");
-                JSONObject pagination = (JSONObject) meta.get("pagination");
-                int total = Math.toIntExact((long) pagination.get("total"));
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONObject meta = responseObject.getJSONObject("meta");
+                JSONObject pagination = meta.getJSONObject("pagination");
+                int total = Math.toIntExact(pagination.getInt("total"));
                 response.complete(total);
             } catch (Exception e) {
                 response.completeExceptionally(e);
@@ -257,30 +257,30 @@ public class NodeManager extends Manager {
         JSONObject nodeConfigSSL = (JSONObject) nodeConfigAPIJson.get("ssl");
         SSL ssl = new SSL(
                 (Boolean) nodeConfigSSL.get("enabled"),
-                (String) nodeConfigSSL.get("cert"),
-                (String) nodeConfigSSL.get("key")
+                nodeConfigSSL.getString("cert"),
+                nodeConfigSSL.getString("key")
         );
 
         NodeConfigApi configApi = new NodeConfigApi(
-                (String) nodeConfigAPIJson.get("host"),
-                (long) nodeConfigAPIJson.get("port"),
+                nodeConfigAPIJson.getString("host"),
+                nodeConfigAPIJson.getInt("port"),
                 ssl,
-                (long) nodeConfigAPIJson.get("upload_limit")
+                nodeConfigAPIJson.getInt("upload_limit")
         );
 
         NodeConfigSystem configSystem = new NodeConfigSystem(
-                (String) nodeConfigSystem.get("data"),
-                (JSONObject) nodeConfigSystem.get("sftp")
+                nodeConfigSystem.getString("data"),
+                nodeConfigSystem.getJSONObject("sftp")
         );
 
         return new NodeConfiguration(
                 (Boolean) nodeConfigDetailsGeneral.get("debug"),
-                UUID.fromString((String) nodeConfigDetailsGeneral.get("uuid")),
-                (String) nodeConfigDetailsGeneral.get("token_id"),
-                (String) nodeConfigDetailsGeneral.get("token"),
+                UUID.fromString(nodeConfigDetailsGeneral.getString("uuid")),
+                nodeConfigDetailsGeneral.getString("token_id"),
+                nodeConfigDetailsGeneral.getString("token"),
                 configApi,
                 configSystem,
-                (String) nodeConfigDetailsGeneral.get("remote")
+                nodeConfigDetailsGeneral.getString("remote")
         );
     }
 
@@ -288,26 +288,28 @@ public class NodeManager extends Manager {
         JSONObject nodeDetailsGeneral = new JSONObject(nodeJson);
         JSONObject nodeDetails = (JSONObject) nodeDetailsGeneral.get("attributes");
         return new Node(
-                (long) nodeDetails.get("id"),
-                UUID.fromString((String) nodeDetails.get("uuid")),
-                (Boolean) nodeDetails.get("public"),
-                (String) nodeDetails.get("name"),
-                (String) nodeDetails.get("description"),
-                (long) nodeDetails.get("location_id"),
-                (String) nodeDetails.get("fqdn"),
-                (String) nodeDetails.get("scheme"),
-                (Boolean) nodeDetails.get("behind_proxy"),
-                (Boolean) nodeDetails.get("maintenance_mode"),
-                (long) nodeDetails.get("memory"),
-                (long) nodeDetails.get("memory_overallocate"),
-                (long) nodeDetails.get("disk"),
-                (long) nodeDetails.get("disk_overallocate"),
-                (long) nodeDetails.get("upload_size"),
-                (long) nodeDetails.get("daemon_listen"),
-                (long) nodeDetails.get("daemon_sftp"),
-                (String) nodeDetails.get("daemon_base"),
-                (String) nodeDetails.get("created_at"),
-                (String) nodeDetails.get("updated_at")
+                nodeDetails.getLong("id"),
+                UUID.fromString(nodeDetails.getString("uuid")),
+                nodeDetails.getBoolean("public"),
+                nodeDetails.getJSONObject("allocated_resources").getInt("memory"),
+                nodeDetails.getJSONObject("allocated_resources").getInt("disk"),
+                nodeDetails.getString("name"),
+                nodeDetails.getString("description"),
+                nodeDetails.getLong("location_id"),
+                nodeDetails.getString("fqdn"),
+                nodeDetails.getString("scheme"),
+                nodeDetails.getBoolean("behind_proxy"),
+                nodeDetails.getBoolean("maintenance_mode"),
+                nodeDetails.getLong("memory"),
+                nodeDetails.getLong("memory_overallocate"),
+                nodeDetails.getLong("disk"),
+                nodeDetails.getLong("disk_overallocate"),
+                nodeDetails.getLong("upload_size"),
+                nodeDetails.getLong("daemon_listen"),
+                nodeDetails.getLong("daemon_sftp"),
+                nodeDetails.getString("daemon_base"),
+                nodeDetails.getString("created_at"),
+                nodeDetails.getString("updated_at")
         );
     }
 
@@ -315,12 +317,12 @@ public class NodeManager extends Manager {
         JSONObject allocationDetailsGeneral = new JSONObject(allocationJson);
         JSONObject allocationDetails = (JSONObject) allocationDetailsGeneral.get("attributes");
         return new Allocation(
-                (long) allocationDetails.get("id"),
-                (String) allocationDetails.get("ip"),
-                (String) allocationDetails.get("alias"),
-                (long) allocationDetails.get("port"),
-                (String) allocationDetails.get("notes"),
-                (boolean) allocationDetails.get("assigned")
+                allocationDetails.getLong("id"),
+                allocationDetails.getString("ip"),
+                allocationDetails.getString("alias"),
+                allocationDetails.getLong("port"),
+                allocationDetails.getString("notes"),
+                allocationDetails.getBoolean("assigned")
         );
     }
 

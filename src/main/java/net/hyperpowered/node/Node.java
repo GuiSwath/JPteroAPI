@@ -14,6 +14,9 @@ public class Node {
     private UUID uuid;
     private boolean Public;
 
+    private int allocated_memory;
+    private int allocated_disk;
+
     @Setter
     private String name;
 
