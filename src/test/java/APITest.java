@@ -57,12 +57,12 @@ public class APITest {
     @Disabled
     public void createUser() throws Exception {
         CompletableFuture<JSONObject> future = userManager.createUser(new UserBuilder()
-                .appendEmail("testesequencial@gmail.com")
-                .appendUsername("teste")
-                .appendFirstName("John")
-                .appendLastName("Cena")
-                .appendPassword("a@#%sPpsn9gy53gAaa3v")
-                .appendExternalId("leitadaJunior"));
+                .setEmail("testesequencial@gmail.com")
+                .setUsername("teste")
+                .setFirstName("John")
+                .setLastName("Cena")
+                .setPassword("a@#%sPpsn9gy53gAaa3v")
+                .setExternalId("leitadaJunior"));
 
         User userPayload = userManager.parseUser(future.get().get("response").toString());
         assertNotNull(userPayload);
@@ -100,29 +100,29 @@ public class APITest {
         System.out.println(egg);
         ServerAllocationBuilder serverAllocation = new ServerAllocationBuilder().appendDefault(57L);
 
-        ServerFutureLimitBuilder serverFutureLimit = new ServerFutureLimitBuilder().appendBackups(1)
-                .appendDatabase(0);
+        ServerFutureLimitBuilder serverFutureLimit = new ServerFutureLimitBuilder().setBackups(1L)
+                .setDatabases(0L);
 
-        ServerLimitBuilder serverLimit = new ServerLimitBuilder().appendCPU(100)
-                .appendMemory(128)
-                .appendDisk(512)
-                .appendIO(500)
-                .appendSwap(0);
+        ServerLimitBuilder serverLimit = new ServerLimitBuilder().setCpu(100L)
+                .setMemory(128L)
+                .setDisk(512L)
+                .setIo(500L)
+                .setSwap(0L);
 
         JSONObject env = new JSONObject();
         env.put("PGUSER", "ptero");
         env.put("PGPASSWORD", "Pl3453Ch4n63M3!");
 
-        ServerBuilder builder = new ServerBuilder().appendName("Building")
-                .appendServerAllocationLimit(serverAllocation)
-                .appendStartup(egg.getStartup())
-                .appendServerFutureLimit(serverFutureLimit)
-                .appendEnvironment(env)
-                .appendEgg(egg.getId())
-                .appendUser(1)
-                .appendDockerImage(egg.getDocker_image())
-                .appendExternalId("abc123")
-                .appendServerLimit(serverLimit);
+        ServerBuilder builder = new ServerBuilder().setName("Building")
+                .setServerAllocationBuilder(serverAllocation)
+                .setStartup(egg.getStartup())
+                .setServerFeatureLimitBuilder(serverFutureLimit)
+                .setEnvironment(env)
+                .setEgg(egg.getId())
+                .setUser(1L)
+                .setDockerImage(egg.getDocker_image())
+                .setExternalId("abc123")
+                .setServerLimitBuilder(serverLimit);
 
         CompletableFuture<JSONObject> future = serverManager.createServer(builder);
         JSONObject serverPayload = (JSONObject) ((JSONObject) future.get().get("response")).get("attributes");
