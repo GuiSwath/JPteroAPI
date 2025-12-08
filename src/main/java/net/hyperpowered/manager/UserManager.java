@@ -4,6 +4,7 @@ import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.requester.ApplicationEndpoint;
 import net.hyperpowered.user.User;
 import net.hyperpowered.user.builder.UserBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,8 +22,8 @@ public class UserManager extends Manager {
         fetch(ApplicationEndpoint.USERS.getEndpoint()).thenAccept(responseJson -> {
             List<User> users = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray usersJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray usersJson = responseObject.getJSONArray("data");
                 for (Object userDetails : usersJson) {
                     User user = parseUser(userDetails.toString());
                     users.add(user);
@@ -33,7 +34,7 @@ public class UserManager extends Manager {
             response.complete(users);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR OS USUÁRIOS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -43,7 +44,7 @@ public class UserManager extends Manager {
     public CompletableFuture<User> getUser(long userID) {
         return fetchUser("/", String.valueOf(userID)).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO PEGAR OS DADOS DO USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -51,7 +52,7 @@ public class UserManager extends Manager {
     public CompletableFuture<User> getUser(String externalID) {
         return fetchUser("/external/", externalID).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO PEGAR OS DADOS DO USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -59,15 +60,15 @@ public class UserManager extends Manager {
     public CompletableFuture<JSONObject> createUser(UserBuilder builder) {
         return create(builder, ApplicationEndpoint.USERS.getEndpoint()).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO CRIAR O USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
 
-    public CompletableFuture<JSONObject> updateUser(User user) {
+    public CompletableFuture<JSONObject> updateUser(@NotNull User user) {
         return update(ApplicationEndpoint.USERS.getEndpoint() + "/" + user.getId(), makeRequestJSON(user)).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO ATUALIZAR UM USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -75,7 +76,7 @@ public class UserManager extends Manager {
     public CompletableFuture<JSONObject> deleteUser(long userID) {
         return delete(ApplicationEndpoint.USERS.getEndpoint() + "/" + userID).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO DELETAR UM USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -98,7 +99,7 @@ public class UserManager extends Manager {
                 userDetails.getString("updated_at"));
     }
 
-    private JSONObject makeRequestJSON(User user) {
+    private @NotNull JSONObject makeRequestJSON(@NotNull User user) {
         JSONObject response = new JSONObject();
         response.put("email", user.getEmail());
         response.put("username", user.getUsername());
@@ -116,18 +117,18 @@ public class UserManager extends Manager {
         return response;
     }
 
-    private CompletableFuture<User> fetchUser(String midPoint, String id) {
+    private @NotNull CompletableFuture<User> fetchUser(String midPoint, String id) {
         CompletableFuture<User> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.USERS.getEndpoint() + midPoint + id).thenAccept(responseJson -> {
             try {
-                JSONObject responseUserJson = (JSONObject) responseJson.get("response");
+                JSONObject responseUserJson = responseJson.getJSONObject("response");
                 response.complete(parseUser(responseUserJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR O USUÁRIO: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 

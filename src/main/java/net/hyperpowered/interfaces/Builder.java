@@ -4,6 +4,6 @@ import org.json.JSONObject;
 
 public interface Builder {
 
-    JSONObject buildToJSON() throws IllegalArgumentException;
+    JSONObject buildToJSON();
 
 }

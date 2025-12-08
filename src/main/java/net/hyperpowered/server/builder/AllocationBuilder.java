@@ -27,9 +27,8 @@ public class AllocationBuilder implements Builder {
 
     @Override
     public JSONObject buildToJSON() throws IllegalArgumentException {
-        if (this.ip == null || this.ports == null) {
+        if (this.ip == null || this.ports == null)
             throw new IllegalArgumentException("OS ARGUMENTOS NAO PODEM SER NULOS!");
-        }
 
         JSONObject response = new JSONObject();
         response.put("ip", ip);

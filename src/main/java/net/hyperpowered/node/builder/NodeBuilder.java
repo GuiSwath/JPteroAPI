@@ -1,10 +1,12 @@
 package net.hyperpowered.node.builder;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import net.hyperpowered.interfaces.Builder;
 import org.json.JSONObject;
 
-@Getter
+@Data
+@Accessors(chain = true)
 public class NodeBuilder implements Builder {
 
     private String name;
@@ -18,61 +20,6 @@ public class NodeBuilder implements Builder {
     private Long upload_size;
     private Long daemon_sftp;
     private Long daemon_listen;
-
-    public NodeBuilder appendName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public NodeBuilder appendLocationID(long location_id) {
-        this.location_id = location_id;
-        return this;
-    }
-
-    public NodeBuilder appendFqdn(String fqdn) {
-        this.fqdn = fqdn;
-        return this;
-    }
-
-    public NodeBuilder appendScheme(String scheme) {
-        this.scheme = scheme;
-        return this;
-    }
-
-    public NodeBuilder appendMemory(long memory) {
-        this.memory = memory;
-        return this;
-    }
-
-    public NodeBuilder appendMemoryOverallocate(long memory_overallocate) {
-        this.memory_overallocate = memory_overallocate;
-        return this;
-    }
-
-    public NodeBuilder appendDisk(long disk) {
-        this.disk = disk;
-        return this;
-    }
-
-    public NodeBuilder appendDiskOverallocate(long disk_overallocate) {
-        this.disk_overallocate = disk_overallocate;
-        return this;
-    }
-
-    public NodeBuilder appendUploadSize(long upload_size) {
-        this.upload_size = upload_size;
-        return this;
-    }
-
-    public NodeBuilder appendDaemonSftp(long daemon_sftp) {
-        this.daemon_sftp = daemon_sftp;
-        return this;
-    }
-
-    public NodeBuilder appendDaemonListen(long daemon_listen) {
-        this.daemon_listen = daemon_listen;
-        return this;
-    }
 
     @Override
     public JSONObject buildToJSON() throws IllegalArgumentException {

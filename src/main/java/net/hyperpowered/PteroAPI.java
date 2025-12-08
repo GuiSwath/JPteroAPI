@@ -4,6 +4,8 @@ import lombok.Getter;
 import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.manager.Manager;
 import net.hyperpowered.utils.ManagerPolicy;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -31,15 +33,12 @@ public class PteroAPI {
     }
 
     public static <T extends Manager> T getManager(Class<T> managerClass) {
-        if (managerClass == null || !Manager.class.isAssignableFrom(managerClass)) {
-            return null;
-        }
-
+        if (managerClass == null || !Manager.class.isAssignableFrom(managerClass)) return null;
         Manager managerResponse = managers.stream().filter(manager -> managerClass.isAssignableFrom(manager.getClass())).findFirst().orElse(null);
         return managerResponse != null ? managerClass.cast(managerResponse) : null;
     }
 
-    private static void startupManagers(ManagerPolicy... managerPolicy) {
+    private static void startupManagers(ManagerPolicy @NotNull ... managerPolicy) {
         for (ManagerPolicy manager : managerPolicy) {
             if (manager == ManagerPolicy.ALL) {
                 Arrays.stream(ManagerPolicy.values()).map(PteroAPI::loadClass).filter(Objects::nonNull).forEach(managers::add);
@@ -51,13 +50,11 @@ public class PteroAPI {
 
     }
 
-    private static Manager loadClass(ManagerPolicy managerPolicy) {
+    private static @Nullable Manager loadClass(ManagerPolicy managerPolicy) {
         try {
             Class<? extends Manager> managerClass = managerPolicy.getClassManager();
 
-            if (managerClass == null) {
-                return null;
-            }
+            if (managerClass == null) return null;
 
             Constructor<? extends Manager> constructor = managerClass.getDeclaredConstructor();
             constructor.setAccessible(true);

@@ -8,7 +8,6 @@ import net.hyperpowered.requester.ApplicationEndpoint;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +22,8 @@ public class NestManager extends Manager {
         fetch(ApplicationEndpoint.NESTS.getEndpoint()).thenAccept(responseJson -> {
             List<Nest> nests = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray nestJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray nestJson = responseObject.getJSONArray("data");
                 for (Object nestDetails : nestJson) {
                     Nest nest = parseNest(nestDetails.toString());
                     nests.add(nest);
@@ -36,7 +35,7 @@ public class NestManager extends Manager {
             response.complete(nests);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR OS NESTS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -48,8 +47,8 @@ public class NestManager extends Manager {
         fetch(ApplicationEndpoint.NESTS.getEndpoint() + "/" + nestID + "/include=nest,servers").thenAccept(responseJson -> {
             List<Egg> eggs = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray eggJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray eggJson = responseObject.getJSONArray("data");
                 for (Object eggDetails : eggJson) {
                     Egg egg = parseEgg(eggDetails.toString());
                     eggs.add(egg);
@@ -61,7 +60,7 @@ public class NestManager extends Manager {
             response.complete(eggs);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR OS EGGS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -72,14 +71,14 @@ public class NestManager extends Manager {
         CompletableFuture<Nest> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.NESTS.getEndpoint() + "/" + nestID).thenAccept(responseJson -> {
             try {
-                JSONObject responseNestJson = (JSONObject) responseJson.get("response");
+                JSONObject responseNestJson = responseJson.getJSONObject("response");
                 response.complete(parseNest(responseNestJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO PEGAR O NEST DO SERVIDOR: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -90,14 +89,14 @@ public class NestManager extends Manager {
         CompletableFuture<Egg> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.NESTS.getEndpoint() + "/" + nestID + "/eggs/" + eggID).thenAccept(responseJson -> {
             try {
-                JSONObject responseEggJson = (JSONObject) responseJson.get("response");
+                JSONObject responseEggJson = responseJson.getJSONObject("response");
                 response.complete(parseEgg(responseEggJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO PEGAR O EGG DO NEST: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -106,41 +105,41 @@ public class NestManager extends Manager {
 
     public Nest parseNest(String nestJson) {
         JSONObject nestDetailsGeneral = new JSONObject(nestJson);
-        JSONObject nestDetails = (JSONObject) nestDetailsGeneral.get("attributes");
+        JSONObject nestDetails = nestDetailsGeneral.getJSONObject("attributes");
         return new Nest(
-                (Long) nestDetails.get("id"),
-                UUID.fromString((String) nestDetails.get("uuid")),
-                (String) nestDetails.get("author"),
-                (String) nestDetails.get("name"),
-                (String) nestDetails.get("description"),
-                (String) nestDetails.get("created_at"),
-                (String) nestDetails.get("updated_at")
+                nestDetails.getLong("id"),
+                UUID.fromString(nestDetails.getString("uuid")),
+                nestDetails.getString("author"),
+                nestDetails.getString("name"),
+                nestDetails.getString("description"),
+                nestDetails.getString("created_at"),
+                nestDetails.getString("updated_at")
         );
     }
 
     public Egg parseEgg(String eggJson) {
         JSONObject eggDetailsGeneral = new JSONObject(eggJson);
-        JSONObject eggDetails = (JSONObject) eggDetailsGeneral.get("attributes");
-        JSONObject eggScriptDetails = (JSONObject) eggDetails.get("script");
+        JSONObject eggDetails = eggDetailsGeneral.getJSONObject("attributes");
+        JSONObject eggScriptDetails = eggDetails.getJSONObject("script");
         EggScript eggScript = new EggScript(
-                (Boolean) eggScriptDetails.get("privileged"),
-                (String) eggScriptDetails.get("install"),
-                (String) eggScriptDetails.get("entry"),
-                (String) eggScriptDetails.get("container")
+                eggScriptDetails.getBoolean("privileged"),
+                eggScriptDetails.getString("install"),
+                eggScriptDetails.getString("entry"),
+                eggScriptDetails.getString("container")
         );
 
         return new Egg(
-                (Long) eggDetails.get("id"),
-                UUID.fromString((String) eggDetails.get("uuid")),
-                (long) eggDetails.get("nest"),
-                (String) eggDetails.get("author"),
-                (String) eggDetails.get("description"),
-                (String) eggDetails.get("docker_image"),
-                (JSONObject) eggDetails.get("config"),
-                (String) eggDetails.get("startup"),
+                eggDetails.getLong("id"),
+                UUID.fromString(eggDetails.getString("uuid")),
+                eggDetails.getLong("nest"),
+                eggDetails.getString("author"),
+                eggDetails.getString("description"),
+                eggDetails.getString("docker_image"),
+                eggDetails.getJSONObject("config"),
+                eggDetails.getString("startup"),
                 eggScript,
-                (String) eggDetails.get("created_at"),
-                (String) eggDetails.get("updated_at")
+                eggDetails.getString("created_at"),
+                eggDetails.getString("updated_at")
         );
     }
 }

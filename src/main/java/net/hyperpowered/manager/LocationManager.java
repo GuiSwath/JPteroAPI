@@ -4,10 +4,10 @@ import net.hyperpowered.location.Location;
 import net.hyperpowered.location.builder.LocationBuilder;
 import net.hyperpowered.logger.PteroLogger;
 import net.hyperpowered.requester.ApplicationEndpoint;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,8 +21,8 @@ public class LocationManager extends Manager {
         fetch(ApplicationEndpoint.LOCATIONS.getEndpoint()).thenAccept(responseJson -> {
             List<Location> locations = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray locationJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray locationJson = responseObject.getJSONArray("data");
                 for (Object locationDetails : locationJson) {
                     Location location = parseLocation(locationDetails.toString());
                     locations.add(location);
@@ -34,7 +34,7 @@ public class LocationManager extends Manager {
             response.complete(locations);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS MÁQUINAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -45,14 +45,14 @@ public class LocationManager extends Manager {
         CompletableFuture<Location> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.LOCATIONS.getEndpoint() + "/" + locationID).thenAccept(responseJson -> {
             try {
-                JSONObject responseLocationJson = (JSONObject) responseJson.get("response");
+                JSONObject responseLocationJson = responseJson.getJSONObject("response");
                 response.complete(parseLocation(responseLocationJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO PEGAR OS DADOS DO SERVIDOR: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -62,15 +62,15 @@ public class LocationManager extends Manager {
     public CompletableFuture<JSONObject> createLocation(LocationBuilder builder) {
         return create(builder, ApplicationEndpoint.LOCATIONS.getEndpoint()).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CRIAR UMA MÁQUINA: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
 
-    public CompletableFuture<JSONObject> updateLocation(Location location) {
+    public CompletableFuture<JSONObject> updateLocation(@NotNull Location location) {
         return update(ApplicationEndpoint.LOCATIONS.getEndpoint() + "/" + location.getId(), makeRequestJSON(location)).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO ATUALIZAR UMA MÁQUINA: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -78,24 +78,24 @@ public class LocationManager extends Manager {
     public CompletableFuture<JSONObject> deleteLocation(long id) {
         return delete(ApplicationEndpoint.LOCATIONS.getEndpoint() + "/" + id).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO DELETAR UMA MÁQUINA: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
 
     public Location parseLocation(String locationJson) {
         JSONObject locationDetailsGeneral = new JSONObject(locationJson);
-        JSONObject locationDetails = (JSONObject) locationDetailsGeneral.get("attributes");
+        JSONObject locationDetails = locationDetailsGeneral.getJSONObject("attributes");
         return new Location(
-                (Long) locationDetails.get("id"),
-                (String) locationDetails.get("short"),
-                (String) locationDetails.get("long"),
-                (String) locationDetails.get("updated_at"),
-                (String) locationDetails.get("created_at")
+                locationDetails.getLong("id"),
+                locationDetails.getString("short"),
+                locationDetails.getString("long"),
+                locationDetails.getString("updated_at"),
+                locationDetails.getString("created_at")
         );
     }
 
-    private JSONObject makeRequestJSON(Location location) {
+    private @NotNull JSONObject makeRequestJSON(@NotNull Location location) {
         JSONObject response = new JSONObject();
         response.put("short", location.getLocationName());
         response.put("long", location.getLocationDescription());

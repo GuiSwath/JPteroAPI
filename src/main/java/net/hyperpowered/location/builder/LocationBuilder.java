@@ -21,7 +21,7 @@ public class LocationBuilder implements Builder {
     }
 
     @Override
-    public JSONObject buildToJSON() throws IllegalArgumentException {
+    public JSONObject buildToJSON() {
         if (this.locationName == null || this.locationDescription == null) {
             throw new IllegalArgumentException("OS ARGUMENTOS NAO PODEM SER NULOS!");
         }

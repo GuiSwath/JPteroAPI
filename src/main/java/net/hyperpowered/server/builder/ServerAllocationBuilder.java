@@ -16,9 +16,8 @@ public class ServerAllocationBuilder implements Builder {
 
     @Override
     public JSONObject buildToJSON() throws IllegalArgumentException {
-        if (this.Default == null) {
+        if (this.Default == null)
             throw new IllegalArgumentException("OS ARGUMENTOS NAO PODEM SER NULOS!");
-        }
 
         JSONObject response = new JSONObject();
         response.put("default", this.Default);

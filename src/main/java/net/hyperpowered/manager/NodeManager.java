@@ -5,6 +5,7 @@ import net.hyperpowered.node.*;
 import net.hyperpowered.node.builder.NodeBuilder;
 import net.hyperpowered.requester.ApplicationEndpoint;
 import net.hyperpowered.server.builder.AllocationBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,8 +23,8 @@ public class NodeManager extends Manager {
         fetch(ApplicationEndpoint.NODES.getEndpoint()).thenAccept(responseJson -> {
             List<Node> nodes = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray nodesJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray nodesJson = responseObject.getJSONArray("data");
                 for (Object nodeDetails : nodesJson) {
                     Node node = parseNode(nodeDetails.toString());
                     nodes.add(node);
@@ -35,7 +36,7 @@ public class NodeManager extends Manager {
             response.complete(nodes);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR OS NODES: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -47,8 +48,8 @@ public class NodeManager extends Manager {
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations?filter[port]=" + port).thenAccept(responseJson -> {
             List<Allocation> allocations = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray allocationJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray allocationJson = responseObject.getJSONArray("data");
 
                 for (Object allocationDetails : allocationJson) {
                     Allocation allocation = parseAllocation(allocationDetails.toString());
@@ -61,7 +62,7 @@ public class NodeManager extends Manager {
             response.complete(allocations);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS PORTAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -73,8 +74,8 @@ public class NodeManager extends Manager {
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations?filter[port]=" + port+"&filter[ip]="+ip).thenAccept(responseJson -> {
             List<Allocation> allocations = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray allocationJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray allocationJson = responseObject.getJSONArray("data");
 
                 for (Object allocationDetails : allocationJson) {
                     Allocation allocation = parseAllocation(allocationDetails.toString());
@@ -87,7 +88,7 @@ public class NodeManager extends Manager {
             response.complete(allocations);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS PORTAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -99,10 +100,10 @@ public class NodeManager extends Manager {
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations").thenAccept(responseJson -> {
             List<Allocation> allocations = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray allocationJson = (JSONArray) responseObject.get("data");
-                JSONObject meta = (JSONObject) responseObject.get("meta");
-                JSONObject pagination = (JSONObject) meta.get("pagination");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray allocationJson = responseObject.getJSONArray("data");
+                JSONObject meta = responseObject.getJSONObject("meta");
+                JSONObject pagination = meta.getJSONObject("pagination");
                 long pages = pagination.getLong("total_pages");
 
                 for (int i = 1; i < pages; i++) {
@@ -121,7 +122,7 @@ public class NodeManager extends Manager {
             response.complete(allocations);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS PORTAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -133,8 +134,8 @@ public class NodeManager extends Manager {
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations?page=" + page).thenAccept(responseJson -> {
             List<Allocation> allocations = new ArrayList<>();
             try {
-                JSONObject responseObject = (JSONObject) responseJson.get("response");
-                JSONArray allocationJson = (JSONArray) responseObject.get("data");
+                JSONObject responseObject = responseJson.getJSONObject("response");
+                JSONArray allocationJson = responseObject.getJSONArray("data");
                 for (Object allocationDetails : allocationJson) {
                     Allocation allocation = parseAllocation(allocationDetails.toString());
                     allocations.add(allocation);
@@ -146,7 +147,7 @@ public class NodeManager extends Manager {
             response.complete(allocations);
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS PORTAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -167,7 +168,7 @@ public class NodeManager extends Manager {
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR AS PORTAS: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -178,14 +179,14 @@ public class NodeManager extends Manager {
         CompletableFuture<Node> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID).thenAccept(responseJson -> {
             try {
-                JSONObject responseNodeJson = (JSONObject) responseJson.get("response");
+                JSONObject responseNodeJson = responseJson.getJSONObject("response");
                 response.complete(parseNode(responseNodeJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR O NODE: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -196,14 +197,14 @@ public class NodeManager extends Manager {
         CompletableFuture<NodeConfiguration> response = new CompletableFuture<>();
         fetch(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/configuration").thenAccept(responseJson -> {
             try {
-                JSONObject responseNodeJson = (JSONObject) responseJson.get("response");
+                JSONObject responseNodeJson = responseJson.getJSONObject("response");
                 response.complete(parseNodeConfig(responseNodeJson.toString()));
             } catch (Exception e) {
                 response.completeExceptionally(e);
             }
         }).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO CARREGAR O NODE: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
 
@@ -213,15 +214,15 @@ public class NodeManager extends Manager {
     public CompletableFuture<JSONObject> createNode(NodeBuilder builder) {
         return create(builder, ApplicationEndpoint.NODES.getEndpoint()).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO CRIAR UM NODE: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
 
-    public CompletableFuture<JSONObject> updateNode(Node node) {
+    public CompletableFuture<JSONObject> updateNode(@NotNull Node node) {
         return update(ApplicationEndpoint.NODES.getEndpoint() + "/" + node.getId(), makeRequestJSON(node)).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO ATUALIZAR UM NODE: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -229,7 +230,7 @@ public class NodeManager extends Manager {
     public CompletableFuture<JSONObject> deleteNode(long nodeID) {
         return delete(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO DELETAR UM NODE: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -237,7 +238,7 @@ public class NodeManager extends Manager {
     public CompletableFuture<JSONObject> createAllocation(AllocationBuilder builder, long nodeID) {
         return create(builder, ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations").exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO CRIAR UMA PORTA: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
@@ -245,18 +246,18 @@ public class NodeManager extends Manager {
     public CompletableFuture<JSONObject> deleteAllocation(long nodeID, long allocationID) {
         return delete(ApplicationEndpoint.NODES.getEndpoint() + "/" + nodeID + "/allocations/" + allocationID).exceptionally(throwable -> {
             LOGGER.severe("OCORREU UM ERRO AO DELETAR UMA PORTA: " + throwable.getMessage() + "\n");
-            sendError(throwable, LOGGER);
+            sendError(throwable);
             return null;
         });
     }
 
     public NodeConfiguration parseNodeConfig(String nodeConfigJson) {
         JSONObject nodeConfigDetailsGeneral = new JSONObject(nodeConfigJson);
-        JSONObject nodeConfigAPIJson = (JSONObject) nodeConfigDetailsGeneral.get("api");
-        JSONObject nodeConfigSystem = (JSONObject) nodeConfigDetailsGeneral.get("system");
-        JSONObject nodeConfigSSL = (JSONObject) nodeConfigAPIJson.get("ssl");
+        JSONObject nodeConfigAPIJson = nodeConfigDetailsGeneral.getJSONObject("api");
+        JSONObject nodeConfigSystem = nodeConfigDetailsGeneral.getJSONObject("system");
+        JSONObject nodeConfigSSL = nodeConfigAPIJson.getJSONObject("ssl");
         SSL ssl = new SSL(
-                (Boolean) nodeConfigSSL.get("enabled"),
+                nodeConfigSSL.getBoolean("enabled"),
                 nodeConfigSSL.getString("cert"),
                 nodeConfigSSL.getString("key")
         );
@@ -274,7 +275,7 @@ public class NodeManager extends Manager {
         );
 
         return new NodeConfiguration(
-                (Boolean) nodeConfigDetailsGeneral.get("debug"),
+                nodeConfigDetailsGeneral.getBoolean("debug"),
                 UUID.fromString(nodeConfigDetailsGeneral.getString("uuid")),
                 nodeConfigDetailsGeneral.getString("token_id"),
                 nodeConfigDetailsGeneral.getString("token"),
@@ -286,7 +287,7 @@ public class NodeManager extends Manager {
 
     public Node parseNode(String nodeJson) {
         JSONObject nodeDetailsGeneral = new JSONObject(nodeJson);
-        JSONObject nodeDetails = (JSONObject) nodeDetailsGeneral.get("attributes");
+        JSONObject nodeDetails = nodeDetailsGeneral.getJSONObject("attributes");
         return new Node(
                 nodeDetails.getLong("id"),
                 UUID.fromString(nodeDetails.getString("uuid")),
@@ -315,7 +316,7 @@ public class NodeManager extends Manager {
 
     public Allocation parseAllocation(String allocationJson) {
         JSONObject allocationDetailsGeneral = new JSONObject(allocationJson);
-        JSONObject allocationDetails = (JSONObject) allocationDetailsGeneral.get("attributes");
+        JSONObject allocationDetails = allocationDetailsGeneral.getJSONObject("attributes");
         return new Allocation(
                 allocationDetails.getLong("id"),
                 allocationDetails.getString("ip"),
@@ -326,7 +327,7 @@ public class NodeManager extends Manager {
         );
     }
 
-    private JSONObject makeRequestJSON(Node node) {
+    private @NotNull JSONObject makeRequestJSON(@NotNull Node node) {
         JSONObject response = new JSONObject();
         response.put("name", node.getName());
         response.put("description", node.getDescription());

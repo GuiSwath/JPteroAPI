@@ -2,6 +2,7 @@ package net.hyperpowered.requester;
 
 import lombok.AllArgsConstructor;
 import net.hyperpowered.logger.PteroLogger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -10,6 +11,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class Requester {
@@ -68,7 +70,7 @@ public class Requester {
         }
     }
 
-    private void appendProperty(RequestMethod requestMethod, HttpURLConnection connection) throws ProtocolException {
+    private void appendProperty(RequestMethod requestMethod, @NotNull HttpURLConnection connection) throws ProtocolException {
         connection.setRequestMethod(requestMethod == RequestMethod.PATCH ? RequestMethod.POST.getValue() : requestMethod.getValue());
         connection.setRequestProperty("User-Agent", this.userAgent);
         connection.setRequestProperty("Accept", "application/json");
@@ -78,16 +80,11 @@ public class Requester {
         if (requestMethod != RequestMethod.GET) connection.setDoOutput(true);
     }
 
-    private JSONObject getJsonResponse(HttpURLConnection connection) throws IOException {
+    private @NotNull JSONObject getJsonResponse(HttpURLConnection connection) throws IOException {
         try (InputStream is = connection.getInputStream()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-
-                return sb.toString().isEmpty() ? new JSONObject() : new JSONObject(sb.toString());
+                String sb = reader.lines().collect(Collectors.joining());;
+                return sb.isEmpty() ? new JSONObject() : new JSONObject(sb);
             }
         }
     }
