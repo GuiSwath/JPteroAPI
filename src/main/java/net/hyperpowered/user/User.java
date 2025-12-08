@@ -8,6 +8,7 @@ import java.util.UUID;
 @Getter
 public class User {
 
+    @NonNull
     private long id;
 
     @NonNull
@@ -40,9 +41,11 @@ public class User {
     private String password;
 
     @Setter
+    @NonNull
     private boolean admin;
 
     @Setter
+    @NonNull
     private boolean twoFactors;
 
     @NonNull
